@@ -34,8 +34,8 @@ int main(void)
     oamInitGfxSet(&cursorsprite, (&cursorsprite_end - &cursorsprite), &cursorpal, 48 * 2, 0, 0x0000, OBJ_SIZE16_L32);
 
     // Initialize text console with our font
-    consoleSetTextVramBGAdr(0x6800);
-    consoleSetTextVramAdr(0x3000);
+    consoleSetTextMapPtr(0x6800);
+    consoleSetTextGfxPtr(0x3000);
     consoleSetTextOffset(0x0100);
     consoleInitText(0, 16 * 2, &snesfont, &snespal);
 
@@ -345,12 +345,12 @@ int main(void)
             }
 
             if (mousePressed[0] == false)
-                dmaFillVram(&buttonsmap, 0x6940, 0x40); // wipe text
+                dmaFillVram8(&buttonsmap, 0x6940, 0x40); // wipe text
         }
         else
         {
-            dmaFillVram(&buttonsmap + 0x40, 0x6188, 0x20); // remove buttons
-            dmaFillVram(&buttonsmap + 0x80, 0x61A8, 0x20); // remove buttons
+            dmaFillVram8(&buttonsmap + 0x40, 0x6188, 0x20); // remove buttons
+            dmaFillVram8(&buttonsmap + 0x80, 0x61A8, 0x20); // remove buttons
         }
 
         if (mouseConnect[1])
@@ -375,12 +375,12 @@ int main(void)
             }
 
             if (mousePressed[1] == false)
-                dmaFillVram(&buttonsmap, 0x6AC0, 0x40); // wipe text
+                dmaFillVram8(&buttonsmap, 0x6AC0, 0x40); // wipe text
         }
         else
         {
-            dmaFillVram(&buttonsmap + 0x40, 0x6308, 0x20); // remove buttons
-            dmaFillVram(&buttonsmap + 0x80, 0x6328, 0x20); // remove buttons
+            dmaFillVram8(&buttonsmap + 0x40, 0x6308, 0x20); // remove buttons
+            dmaFillVram8(&buttonsmap + 0x80, 0x6328, 0x20); // remove buttons
         }
 
         // END VBLANK CODE

@@ -28,7 +28,13 @@
 .EQU REG_STAT78             $213F
 .EQU REG_DEBUG              $21FC
 
+.ifdef HIROM
+.EQU BANK_SRAM              $30
+.EQU OFFSET_SRAM            $6000
+.else
 .EQU BANK_SRAM              $70
+.EQU OFFSET_SRAM            $0
+.endif
 .EQU PPU_50HZ               (1<<4)
 
 .EQU INT_VBLENABLE          (1<<7)
@@ -36,7 +42,7 @@
 
 .DEFINE TXT_VRAMADR         $3000
 .DEFINE TXT_VRAMBGADR       $6800
-.DEFINE TXT_VRAMOFFSET      $0100
+.DEFINE TXT_VRAMOFFSET      $0000
 
 .BASE $00
 .RAMSECTION ".reg_cons7e" BANK $7E SLOT RAMSLOT_0
@@ -187,7 +193,7 @@ consoleCopySram:
 
     sep #$20
 -:  lda     [tcc__r2],y
-    sta     0,y
+    sta     OFFSET_SRAM,y
     iny
     dex
     beq +
@@ -233,7 +239,7 @@ consoleLoadSram:
     ldy #$0
 
     sep #$20
--:  lda     0,y
+-:  lda     OFFSET_SRAM,y
     sta     [tcc__r2],y
     iny
     dex
@@ -292,7 +298,7 @@ consoleCopySramWithOffset:
 
     pla
     sep #$20
-    sta     0,y
+    sta     OFFSET_SRAM,y
     rep #$20
     ply
     iny     ; increase counter
@@ -347,8 +353,8 @@ consoleLoadSramWithOffset:
     adc     18,s        ;add offset to y index
     tay
     sep #$20
-    lda     0,y         ;load from offset
-    ply                 ;restore y index
+    lda     OFFSET_SRAM,y   ;load from offset
+    ply                     ;restore y index
     sta     [tcc__r2],y
     iny
     dex
@@ -596,40 +602,31 @@ consoleInitText:
     rtl
 
 ;---------------------------------------------------------------------------
-;void consoleSetTextVramAdr(u16 vramfont)
+;void consoleSetTextGfxPtr(u16 vramfont)
 ; 6-7
-consoleSetTextVramAdr:
+consoleSetTextGfxPtr:
     php
     phb
 
-    sep #$20                                                  ; 8bit A
-    lda #$7e
-    pha
-    plb
 
     rep #$20
     lda 6,s                                                  ; store graphic address of text
-    sta txt_vram_adr
+    sta.l txt_vram_adr
 
     plb
     plp
     rtl
 
 ;---------------------------------------------------------------------------
-;void consoleSetTextVramBGAdr(u16 vrambgfont)
+;void consoleSetTextMapPtr(u16 vrambgfont)
 ; 6-7
-consoleSetTextVramBGAdr:
+consoleSetTextMapPtr:
     php
     phb
 
-    sep #$20                                                  ; 8bit A
-    lda #$7e
-    pha
-    plb
-
     rep #$20
     lda 6,s                                                  ; store BG graphic address of text
-    sta txt_vram_bg
+    sta.l txt_vram_bg
 
     plb
     plp
@@ -642,14 +639,10 @@ consoleSetTextOffset:
     php
     phb
 
-    sep #$20                                                  ; 8bit A
-    lda #$7e
-    pha
-    plb
 
     rep #$20
     lda 6,s                                                  ; store BG graphic address of text
-    sta txt_vram_offset
+    sta.l txt_vram_offset
 
     plb
     plp

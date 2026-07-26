@@ -79,6 +79,7 @@ typedef struct
 
 /*! \fn  spcBoot(void)
     \brief boots the spc700 with sm-spc. call once at startup
+    disable time consuing interrupts during this function
 */
 void spcBoot(void);
 
@@ -118,6 +119,18 @@ void spcPlay(u8 startPos);
 */
 void spcStop(void);
 
+/*! \fn  spcPauseMusic(void)
+    \brief pause playing the current module and save the music position.
+*/
+void spcPauseMusic(void);
+
+/*! \fn  spcResumeMusic(void)
+    \brief Resume playing of current module at music position.
+
+    spcPauseMusic has to be call before to restore correct position.
+*/
+void spcResumeMusic(void);
+
 /*! \fn  spcSetModuleVolume(u8 vol)
     \brief set the module playback volume
     \param vol	volume (0..255)
@@ -148,11 +161,17 @@ void spcProcess(void);
 
 /*! \fn  spcEffect(u16 pitch,u16 sfxIndex, u8 volpan)
     \brief Play sound effect (load with spcLoadEffect)
-    \param pitch	pitch (0-15, 8=32khz)
+    \param pitch	pitch (0-15, 1=4Khz , 2=8khz, 4=16Khz, 8=32Khz)
     \param sfxIndex	effect index (0-15)
     \param volpan	volume(0..15) AND panning(0..15) (volume*16+pan)
 */
 void spcEffect(u16 pitch, u16 sfxIndex, u8 volpan);
+
+/*! \fn  spcGetMusicPosition(void)
+    \brief Get current running pattern
+    \return current pattern
+*/
+u8 spcGetMusicPosition(void);
 
 /*! \fn  spcSetSoundTable(u16 sndTableAddr,u8 sndTableBank)
     \brief set the address of the SOUND TABLE
